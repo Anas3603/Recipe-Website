@@ -5,7 +5,7 @@
 }
 
 .nav {
-  background-color: rgb(244, 61, 61);
+  background-color: darkgrey;
   display: flex;
   justify-content: space-between;
   width: 100%;
@@ -40,13 +40,30 @@
 }
 
 .right div {
-  padding: 1rem;
-  font-size: 1.2rem;
-  font-weight: bold;
+  position: relative;
+  padding: 10px 15px;
+  cursor: pointer;
+  color: black;
 }
 
-.right div:hover {
-  background-color: rgb(116, 8, 116);
+.left h2{
+  color: black;
+}
+
+
+.right div::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: black;
+  transition: width 0.3s ease-in-out;
+}
+
+.right div:hover::after {
+  width: 100%;
 }
 
 .slider {
@@ -110,12 +127,12 @@
   transition: transform 0.3s ease;
 }
 
-.img img:hover{
+.img img:hover {
   transform: translateZ(100px);
   border: 2px solid yellow;
 }
 
-.link{
+.link {
   text-decoration: none;
   color: white;
 }
