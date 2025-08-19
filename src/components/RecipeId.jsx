@@ -5,9 +5,8 @@ import { useEffect, useState } from "react";
 
 const RecipeId = () => {
   const { idMeal } = useParams();
-  // console.log(useParams())
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [active, setActive] = useState("ingredient");
 
   useEffect(() => {
@@ -15,15 +14,27 @@ const RecipeId = () => {
       const api = await fetch(
         `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`
       );
-      const data = await api.json();
-
-      // console.log(data.meals);
-      setData(data.meals[0]);
-      console.log(data);
+      const result = await api.json();
+      setData(result.meals[0]);
     };
 
     fetchData();
   }, [idMeal]);
+
+  // Function to extract ingredients dynamically
+  const getIngredients = () => {
+    let ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = data[`strIngredient${i}`];
+      const measure = data[`strMeasure${i}`];
+      if (ingredient && ingredient.trim() !== "") {
+        ingredients.push(`${ingredient} - ${measure}`);
+      }
+    }
+    return ingredients;
+  };
+
+  if (!data) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
 
   return (
     <>
@@ -39,13 +50,16 @@ const RecipeId = () => {
         <div
           style={{
             display: "flex",
+            gap: "2rem",
+            marginTop: "2rem",
+            flexWrap: "wrap",
           }}
         >
-          <div className="img" style={{ width: "30%", marginTop: "2rem" }}>
-            <img src={data.strMealThumb} alt="" style={{ width: "18rem" }} />
+          <div className="img" style={{ flex: "1" }}>
+            <img src={data.strMealThumb} alt="" style={{ width: "100%", maxWidth: "20rem", borderRadius: "10px" }} />
           </div>
 
-          <div className="content" style={{ width: "60%" }}>
+          <div className="content" style={{ flex: "2" }}>
             <button className="btn" onClick={() => setActive("ingredient")}>
               Ingredient
             </button>
@@ -55,32 +69,21 @@ const RecipeId = () => {
 
             {active === "ingredient" ? (
               <div>
-                <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                  {data.strIngredient1} - {data.strMeasure1}
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                  {data.strIngredient2} - {data.strMeasure2}
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                  {data.strIngredient3} - {data.strMeasure3}
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                  {data.strIngredient4} - {data.strMeasure4}
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                  {data.strIngredient5} - {data.strMeasure5}
-                </div>
-                <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-                  {data.strIngredient6} - {data.strMeasure6}
-                </div>
+                {getIngredients().map((item, index) => (
+                  <div key={index} style={{ fontSize: "1.2rem", fontWeight: "bold", margin: "5px 0" }}>
+                    {item}
+                  </div>
+                ))}
               </div>
             ) : (
-              <p>{data.strInstructions} </p>
+              <p style={{ textAlign: "justify", fontSize: "1.1rem", lineHeight: "1.6" }}>
+                {data.strInstructions}
+              </p>
             )}
           </div>
         </div>
       </div>
-      <div style={{ marginTop: "1rem" }}>
+      <div style={{ marginTop: "2rem" }}>
         <TrendingSlider />
       </div>
     </>
